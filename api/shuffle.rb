@@ -6,6 +6,8 @@ require 'slack-ruby-client'
 require 'lib/slack_client'
 
 Handler = proc do |req, res|
+  puts req.to_s
+
   slack = SlackClient.new
   verify_request!(slack, req)
 
