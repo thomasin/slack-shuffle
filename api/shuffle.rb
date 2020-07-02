@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'json'
 require 'slack-ruby-client'
 
 require 'lib/slack_client'

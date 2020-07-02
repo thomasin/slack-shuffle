@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json'
+
 # Generate event responses
 # Only used for the Handler return value
 class EventResponder
@@ -30,6 +32,6 @@ class EventResponder
 
   def send_json(response_body)
     @res['Content-type'] = 'application/json'
-    res.body = response_body.to_json
+    @res.body = response_body.to_json
   end
 end
