@@ -21,17 +21,19 @@ class SlackClient
     Slack::Web::Client.new
   end
 
-  def event(req)
-    headers = {
-      'X-Slack-Request-Timestamp' => req['X-Slack-Request-Timestamp'],
-      'X-Slack-Signature' => req['X-Slack-Signature']
-    }
-    body = OpenStruct.new(read: req.body)
-
-    # The request object used by Now does not match up to the one expected
-    # by Slack::Events::Request, code located:
+  def event(request_timestamp, signature, body)
+    # To fit code located:
     # https://github.com/dblock/slack-ruby-client/blob/master/lib/slack/events/request.rb
-    http_request = OpenStruct.new(headers: headers, body: body)
+    headers = {
+      'X-Slack-Request-Timestamp' => request_timestamp,
+      'X-Slack-Signature' => signature
+    }
+
+    http_request = OpenStruct.new(
+      headers: headers,
+      body: OpenStruct.new(read: body)
+    )
+
     Slack::Events::Request.new(http_request)
   end
 end

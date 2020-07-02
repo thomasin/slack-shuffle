@@ -4,33 +4,47 @@ require 'json'
 require 'slack-ruby-client'
 
 require 'lib/slack_client'
+require 'lib/event_responder'
 
 Handler = proc do |req, res|
   slack = SlackClient.new
-  verify_request!(slack, req)
-
+  respond = EventResponder.new(res)
   request_body = decode_body(req.body)
 
-  conversation_members = slack.web_api.conversations_members(
-    channel: request_body['channel_id']
-  )
+  unless request_verified?
+    message = 'Error verifying this app is authentic'
+    return respond.error(400).ephemeral(message)
+  end
 
-  respond_with(res, {
-    response_type: 'ephemeral',
-    text: 'shuffling (:'
-  })
+  attempt_slack_requests! do
+    conversation_members = slack.web_api.conversations_members(
+      channel: request_body['channel_id']
+    )
+
+    respond.success.ephemeral('Shuffling!')
+  rescue StandardError => e
+    respond.error(400).ephemeral(e.message)
+  end
 end
 
-def respond_with(res, response_body)
-  res.status = 200
-  res['Content-type'] = 'application/json'
-  res.body = response_body.to_json
+def attempt_slack_requests!
+  yield
+rescue Slack::Web::Api::Errors::ChannelNotFound
+  raise 'Channel not found. You may have to invite the `randomiser` app to your channel'
+rescue Slack::Web::Api::Errors::SlackError
+  raise 'Sorry, we messed something up 😖'
 end
 
-def verify_request!(slack, req)
-  slack_request = slack.event(req)
+def request_verified?(slack, req)
+  request_timestamp = req['X-Slack-Request-Timestamp']
+  signature = req['X-Slack-Signature']
+
+  slack_request = slack.event(request_timestamp, signature, req.body)
   slack_request.verify!
-  raise 'Invalid signature' unless slack_request.valid?
+  slack_request.valid?
+rescue StandardError => e
+  puts e.to_s
+  false
 end
 
 def decode_body(body)
