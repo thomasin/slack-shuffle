@@ -24,7 +24,7 @@ Handler = proc do |req, res|
   }
 end
 
-def verify_request!
+def verify_request!(req)
   slack_request = Slack::Events::Request.new(req)
   slack_request.verify!
 end
