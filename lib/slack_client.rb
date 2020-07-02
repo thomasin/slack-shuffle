@@ -21,6 +21,10 @@ class SlackClient
   end
 
   def event(req)
+    puts "Headers"
+    puts req['X-Slack-Request-Timestamp']
+    puts req['X-Slack-Signature']
+
     headers = {
       'X-Slack-Request-Timestamp': req['X-Slack-Request-Timestamp'],
       'X-Slack-Signature': req['X-Slack-Signature']
