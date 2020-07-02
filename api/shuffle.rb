@@ -11,7 +11,7 @@ Handler = proc do |req, res|
   verify_request!(req)
 
   conversation_members = slack.conversations_members(
-    channel: channel_id
+    channel: req.body.channel_id
   )
 
   puts conversation_members
