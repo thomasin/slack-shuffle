@@ -9,8 +9,10 @@ Handler = proc do |req, res|
   slack = SlackClient.new
   verify_request!(slack, req)
 
+  request_body = decode_body(req.body)
+
   conversation_members = slack.web_api.conversations_members(
-    channel: req.query['channel_id']
+    channel: request_body['channel_id']
   )
 
   puts conversation_members
@@ -27,4 +29,9 @@ def verify_request!(slack, req)
   slack_request = slack.event(req)
   slack_request.verify!
   raise 'Invalid signature' unless slack_request.valid?
+end
+
+def decode_body(body)
+  body_array = URI.decode_www_form(body)
+  body_array.to_h
 end
