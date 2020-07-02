@@ -16,11 +16,11 @@ Handler = proc do |req, res|
   )
 
   res.status = 200
-  res['Content-Type'] = 'text/text; charset=utf-8'
-  res.body = URI.encode_www_form({
-    'response_type' => 'ephemeral',
-    'text' => 'shuffling (:'
-  })
+  res['Content-Type'] = 'application/json; charset=utf-8'
+  res.body = {
+    response_type: 'ephemeral',
+    text: 'shuffling (:'
+  }
 end
 
 def verify_request!(slack, req)
