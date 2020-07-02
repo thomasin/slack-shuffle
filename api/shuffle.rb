@@ -26,5 +26,5 @@ end
 def verify_request!(slack, req)
   slack_request = slack.event(req)
   slack_request.verify!
-  raise "Invalid signature" unless slack_request.valid?
+  raise 'Invalid signature' unless slack_request.valid?
 end
