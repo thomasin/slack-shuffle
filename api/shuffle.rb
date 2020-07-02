@@ -11,7 +11,7 @@ Handler = proc do |req, res|
   respond = EventResponder.new(res)
   request_body = decode_body(req.body)
 
-  unless request_verified?
+  unless request_verified?(req, slack)
     message = 'Error verifying this app is authentic'
     return respond.error(400).ephemeral(message)
   end
@@ -35,7 +35,7 @@ rescue Slack::Web::Api::Errors::SlackError
   raise 'Sorry, we messed something up 😖'
 end
 
-def request_verified?(slack, req)
+def request_verified?(req, slack)
   request_timestamp = req['X-Slack-Request-Timestamp']
   signature = req['X-Slack-Signature']
 
