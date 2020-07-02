@@ -10,7 +10,7 @@ Handler = proc do |req, res|
   verify_request!(slack, req)
 
   conversation_members = slack.web_api.conversations_members(
-    channel: req.body.channel_id
+    channel: req.query['channel_id']
   )
 
   puts conversation_members
