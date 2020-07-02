@@ -7,18 +7,18 @@ require 'lib/slack_command_integration'
 # Business logic/glue class
 class SlashCommand
   def self.process(command, api)
-    unless @command.verified?
+    unless command.verified?
       message = 'Error verifying this app is authentic'
-      return @command.respond_with(message)
+      return command.respond_with(message)
     end
 
-    result = @api.request_safely do
-      conversation_id = @command.conversation_id
-      puts @api.conversation_participants(conversation_id)
+    result = api.request_safely do
+      conversation_id = command.conversation_id
+      puts api.conversation_participants(conversation_id)
       'Shuffling!'
     end
 
-    @command.respond_with(result.message)
+    command.respond_with(result.message)
   end
 end
 
