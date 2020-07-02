@@ -11,6 +11,9 @@ Handler = proc do |req, res|
 
   request_body = decode_body(req.body)
 
+  puts request_body.to_s
+  puts request_body['channel_id']
+
   conversation_members = slack.web_api.conversations_members(
     channel: request_body['channel_id']
   )
