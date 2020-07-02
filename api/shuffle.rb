@@ -1,52 +1,41 @@
 # frozen_string_literal: true
 
-require 'slack-ruby-client'
-
 require 'lib/slack_client'
-require 'lib/event_responder'
+require 'lib/slack_web_api_integration'
+require 'lib/slack_command_integration'
+
+# Business logic/glue class
+class App
+  def initialize(command, api)
+    @command = command
+    @api = api
+  end
+
+  def call
+    unless @command.verified?
+      message = 'Error verifying this app is authentic'
+      return @command.respond_with(message)
+    end
+
+    result = @api.request_safely do
+      conversation_id = @command.conversation_id
+      puts @api.conversation_participants(conversation_id)
+      'Shuffling!'
+    end
+
+    @command.respond_with(result.message)
+  end
+end
 
 Handler = proc do |req, res|
-  slack = SlackClient.new
-  respond = EventResponder.new(res)
-  request_body = decode_body(req.body)
+  configuration_successful = SlackClient.configure
 
-  unless request_verified?(req, slack)
-    message = 'Error verifying this app is authentic'
-    return respond.error(400).ephemeral(message)
+  command = SlackCommandIntegration.new(req, res)
+  api = SlackWebApiIntegration.new
+
+  if configuration_successful
+    SlashCommand.process(command, api)
+  else
+    command.respond_with('We messed up app configuration Whoops')
   end
-
-  attempt_slack_requests! do
-    conversation_members = slack.web_api.conversations_members(
-      channel: request_body['channel_id']
-    )
-
-    respond.success.ephemeral('Shuffling!')
-  rescue StandardError => e
-    respond.error(400).ephemeral(e.message)
-  end
-end
-
-def attempt_slack_requests!
-  yield
-rescue Slack::Web::Api::Errors::ChannelNotFound
-  raise 'Channel not found. You may have to invite the `randomiser` app to your channel'
-rescue Slack::Web::Api::Errors::SlackError
-  raise 'Sorry, we messed something up 😖'
-end
-
-def request_verified?(req, slack)
-  request_timestamp = req['X-Slack-Request-Timestamp']
-  signature = req['X-Slack-Signature']
-
-  slack_request = slack.event(request_timestamp, signature, req.body)
-  slack_request.verify!
-  slack_request.valid?
-rescue StandardError => e
-  puts e.to_s
-  false
-end
-
-def decode_body(body)
-  body_array = URI.decode_www_form(body)
-  body_array.to_h
 end
