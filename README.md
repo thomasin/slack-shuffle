@@ -1,4 +1,4 @@
 # slack-shuffle
 shuffle people in slack
 
-[function logs](https://vercel.com/thomasin/slack-shuffle/44ooajkma/functions)
+[function logs](slack-shuffle.thomasin.vercel.app/_logs)
