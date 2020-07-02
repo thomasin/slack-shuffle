@@ -3,7 +3,7 @@
 require 'net/http'
 require 'slack-ruby-client'
 
-require '../lib/slack_client'
+require 'lib/slack_client'
 
 slack = SlackClient.configured
 
