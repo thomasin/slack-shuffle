@@ -10,7 +10,7 @@ slack = SlackClient.configured
 Handler = proc do |req, res|
   verify_request!(req)
 
-  conversation_members = slack.conversations_members(
+  conversation_members = slack.web_api.conversations_members(
     channel: req.body.channel_id
   )
 
@@ -25,6 +25,6 @@ Handler = proc do |req, res|
 end
 
 def verify_request!(req)
-  slack_request = Slack::Events::Request.new(req)
+  slack_request = slack.event(req)
   slack_request.verify!
 end
