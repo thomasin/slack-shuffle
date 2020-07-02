@@ -5,13 +5,8 @@ require 'lib/slack_web_api_integration'
 require 'lib/slack_command_integration'
 
 # Business logic/glue class
-class App
-  def initialize(command, api)
-    @command = command
-    @api = api
-  end
-
-  def call
+class SlashCommand
+  def self.process(command, api)
     unless @command.verified?
       message = 'Error verifying this app is authentic'
       return @command.respond_with(message)
