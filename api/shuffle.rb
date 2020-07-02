@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'net/http'
+require 'json'
 require 'slack-ruby-client'
 
 require 'lib/slack_client'
@@ -15,12 +15,16 @@ Handler = proc do |req, res|
     channel: request_body['channel_id']
   )
 
+  respond_with(res, {
+    response_type: 'ephemeral',
+    text: 'shuffling (:'
+  })
+end
+
+def respond_with(res, response_body)
   res.status = 200
   res['Content-type'] = 'application/json'
-  res.body = {
-    'response_type' => 'ephemeral',
-    'text' => 'shuffling (:'
-  }
+  res.body = response_body.to_json
 end
 
 def verify_request!(slack, req)
