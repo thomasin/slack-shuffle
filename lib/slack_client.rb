@@ -23,8 +23,8 @@ class SlackClient
 
   def event(req)
     headers = {
-      'X-Slack-Request-Timestamp': req['X-Slack-Request-Timestamp'],
-      'X-Slack-Signature': req['X-Slack-Signature']
+      'X-Slack-Request-Timestamp' => req['X-Slack-Request-Timestamp'],
+      'X-Slack-Signature' => req['X-Slack-Signature']
     }
 
     # The request object used by Now does not match up to the one expected
