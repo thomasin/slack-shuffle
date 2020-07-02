@@ -29,7 +29,7 @@ class SlackClient
     # The request object used by Now does not match up to the one expected
     # by Slack::Events::Request, code located:
     # https://github.com/dblock/slack-ruby-client/blob/master/lib/slack/events/request.rb
-    http_request = OpenStruct.new(headers: headers, body: body)
+    http_request = OpenStruct.new(headers: headers, body: req.body)
     Slack::Events::Request.new(http_request)
   end
 end
