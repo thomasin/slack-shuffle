@@ -12,6 +12,7 @@ class SlackClient
 
     Slack::Events.configure do |config|
       config.signing_secret = ENV['SLACK_SIGNING_SECRET']
+      config.signature_expires_in = 60 * 5 # 5 minutes
       raise 'Missing ENV[SLACK_SIGNING_SECRET]!' unless config.signing_secret
     end
   end
@@ -21,10 +22,6 @@ class SlackClient
   end
 
   def event(req)
-    puts "Headers"
-    puts req['X-Slack-Request-Timestamp']
-    puts req['X-Slack-Signature']
-
     headers = {
       'X-Slack-Request-Timestamp': req['X-Slack-Request-Timestamp'],
       'X-Slack-Signature': req['X-Slack-Signature']
