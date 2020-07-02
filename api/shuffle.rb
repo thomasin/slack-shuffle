@@ -16,10 +16,10 @@ Handler = proc do |req, res|
   )
 
   res.status = 200
-  res['Content-Type'] = 'application/json; charset=utf-8'
+  res['Content-type'] = 'application/json'
   res.body = {
-    response_type: 'ephemeral',
-    text: 'shuffling (:'
+    'response_type' => 'ephemeral',
+    'text' => 'shuffling (:'
   }
 end
 
