@@ -4,7 +4,7 @@ require 'slack-ruby-client'
 
 # Wraps and pre-configures Slack Ruby Client
 class SlackClient
-  def self.configured
+  def initialize
     Slack.configure do |config|
       config.token = ENV['SLACK_API_TOKEN']
       raise 'Missing ENV[SLACK_API_TOKEN]!' unless config.token
