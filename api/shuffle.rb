@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'net/http'
+require 'json'
 require 'slack-ruby-client'
 
 require 'lib/slack_client'
@@ -20,7 +20,7 @@ Handler = proc do |req, res|
   res.body = {
     'response_type' => 'ephemeral',
     'text' => 'shuffling (:'
-  }
+  }.to_json
 end
 
 def verify_request!(slack, req)
