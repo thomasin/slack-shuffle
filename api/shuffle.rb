@@ -1,36 +1,36 @@
 # frozen_string_literal: true
 
-require 'net/http'
+require 'lib/slack_client'
+require 'lib/slack_web_api_integration'
+require 'lib/slack_command_integration'
 
-Slack.configure do |config|
-  config.token = ENV['SLACK_API_TOKEN']
+# Business logic/glue class
+class SlashCommand
+  def self.process(command, api)
+    unless command.verified?
+      message = 'Error verifying this app is authentic'
+      return command.respond_with(message)
+    end
+
+    result = api.request_safely do
+      conversation_id = command.conversation_id
+      puts api.conversation_participants(conversation_id)
+      'Shuffling!'
+    end
+
+    command.respond_with(result.message)
+  end
 end
 
 Handler = proc do |req, res|
-  slack_request = Slack::Events::Request.new(http_request)
-  slack_request.verify!
-  conversation_members = members_of(req.body.channel_id)
+  configuration_successful = SlackClient.configure
 
-  res.status = 200
-  res['Content-Type'] = 'text/text; charset=utf-8'
-  res.body = {
-    response_type: 'ephemeral',
-    text: 'shuffling (:'
-  }
-end
+  command = SlackCommandIntegration.new(req, res)
+  api = SlackWebApiIntegration.new
 
-def reply_with(_shuffled_members, endpoint)
-  query_params = {
-    channel: channel_id,
-    token: token
-  }
-
-  url = URI::HTTPS.build(host: endpoint, query: URI.encode_www_form(query_params))
-
-  req = Net::HTTP::Post.new(url)
-  res = Net::HTTP.start(url.host, url.port) do |http|
-    http.request(req)
+  if configuration_successful
+    SlashCommand.process(command, api)
+  else
+    command.respond_with('We messed up app configuration Whoops')
   end
-
-  res.body.members
 end
