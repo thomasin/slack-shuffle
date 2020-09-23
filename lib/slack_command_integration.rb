@@ -28,11 +28,12 @@ class SlackCommandIntegration
   end
 
   def respond_with(text)
+    puts text
     @res.status = 200
     @res['Content-type'] = 'application/json'
     @res.body = {
       response: 'ephemeral',
-      text: "hello"
+      text: "#{text.encode!("ASCII-8BIT", Encoding::UTF_8, invalid: :replace, undef: :replace)}"
     }.to_json
   end
 
