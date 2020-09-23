@@ -32,7 +32,7 @@ class SlackCommandIntegration
     @res['Content-type'] = 'application/json'
     @res.body = {
       response: 'ephemeral',
-      text: text.encode(Encoding::UTF_8)
+      text: text.encode(Encoding::UTF_8, invalid: :replace, undef: :replace, replace: '?')
     }.to_json
   end
 

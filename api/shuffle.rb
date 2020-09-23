@@ -18,6 +18,7 @@ class SlashCommand
 
       api.users_list do |response|
         response.members.each do |member|
+          puts member
           participants.delete(member.id) if member.is_bot or member.is_app_user
         end
       end
