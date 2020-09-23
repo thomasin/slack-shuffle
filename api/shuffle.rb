@@ -14,8 +14,8 @@ class SlashCommand
 
     result = api.request_safely do
       conversation_id = command.conversation_id
-      puts api.conversation_participants(conversation_id)
-      'Shuffling!'
+      participants = api.conversation_participants(conversation_id)
+      participants.shuffle.join(',')
     end
 
     command.respond_with(result.message)
