@@ -15,8 +15,11 @@ class SlashCommand
     result = api.request_safely do
       conversation_id = command.conversation_id
       participants = api.conversation_participants(conversation_id)
-      puts participants
-      participants.members.shuffle.join(',')
+      participants.
+        members.
+        shuffle.
+        map { |uid| "<@#{uid}>" }.
+        join(',')
     end
 
     command.respond_with(result.message)
