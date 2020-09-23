@@ -31,7 +31,8 @@ class SlackWebApiIntegration
     success(message)
   rescue Slack::Web::Api::Errors::ChannelNotFound
     failure('A bit lost! If this channel is private, add `randomiser`')
-  rescue Slack::Web::Api::Errors::SlackError
+  rescue Slack::Web::Api::Errors::SlackError => e
+    puts e.message
     failure('Sorry, we messed something up 😖')
   end
 
