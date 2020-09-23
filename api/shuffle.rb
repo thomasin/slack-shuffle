@@ -28,7 +28,7 @@ class SlashCommand
       end
 
       conversation_humans.shuffle.each_with_index.inject("") do |message, (human, index)|
-        "#{index + 1}. #{human[:name]}\n"
+        "#{message}#{index + 1}. #{human[:name]}\n"
       end
     end
 
