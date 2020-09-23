@@ -14,12 +14,15 @@ class SlashCommand
 
     result = api.request_safely do
       conversation_id = command.conversation_id
-      participants = api.conversation_participants(conversation_id)
-      participants.
-        members.
-        shuffle.
-        map { |uid| "<@#{uid}>" }.
-        join(',')
+      participants = api.conversation_participants(conversation_id).members
+
+      api.users_list do |response|
+        response.members.each do |member|
+          participants.delete(member.id) if member.is_bot or member.is_app_user
+        end
+      end
+
+      participants.shuffle.inject("") { |uids, uid| "#{uids}, <@#{uid}>" }
     end
 
     command.respond_with(result.message)

@@ -9,9 +9,21 @@ class SlackWebApiIntegration
   end
 
   def conversation_participants(channel_id)
-    @client.conversations_members(
-      channel: channel_id
-    )
+    if block_given?
+      @client.conversations_members(channel: channel_id) do |response|
+        yield response
+      end
+    else
+      @client.conversations_members(channel: channel_id)
+    end
+  end
+
+  def users_list
+    return @client.users_list unless block_given?
+
+    @client.users_list do |response|
+      yield response
+    end
   end
 
   def request_safely
