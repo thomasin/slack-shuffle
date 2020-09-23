@@ -16,13 +16,20 @@ class SlashCommand
       conversation_id = command.conversation_id
       participants = api.conversation_participants(conversation_id).members
 
+      # Some might be bots
+      conversation_humans = []
       api.users_list do |response|
         response.members.each do |member|
-          participants.delete(member.id) if member.is_bot or member.is_app_user
+          next if member.is_bot || member.is_app_user
+          next unless participants.include?(member.id)
+
+          conversation_humans << { id: member.id, name: member.name }
         end
       end
 
-      participants.shuffle.inject("") { |uids, uid| "#{uids}, <@#{uid}>" }
+      conversation_humans.shuffle.each_with_index.inject("") do |message, (human, index)|
+        "#{index + 1}. #{human.name}\n"
+      end
     end
 
     command.respond_with(result.message)

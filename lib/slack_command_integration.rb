@@ -28,7 +28,6 @@ class SlackCommandIntegration
   end
 
   def respond_with(text)
-    puts text
     @res.status = 200
     @res['Content-type'] = 'application/json'
     @res.body = {
